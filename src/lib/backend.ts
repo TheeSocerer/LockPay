@@ -5,7 +5,7 @@ import { useLockPayContracts, useLockPayData } from "./thirdweb";
 // Backend integration layer for LockPay application
 export class LockPayBackend {
   private lockPayContracts!: ReturnType<typeof useLockPayContracts>;
-  private _lockPayData!: ReturnType<typeof useLockPayData>;
+
 
   constructor() {
     // This will be initialized when the hooks are available
@@ -14,7 +14,6 @@ export class LockPayBackend {
   // Initialize with contract hooks
   initialize(contracts: ReturnType<typeof useLockPayContracts>, data: ReturnType<typeof useLockPayData>) {
     this.lockPayContracts = contracts;
-    this._lockPayData = data;
   }
 
   // User authentication (simplified for demo)

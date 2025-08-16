@@ -34,9 +34,9 @@ export const throttle = <T extends (...args: any[]) => any>(
 };
 
 // Lazy load utility
-export const lazyLoad = <T extends any>(
+export const lazyLoad = <T extends React.ComponentType<any>>(
   importFunc: () => Promise<{ default: T }>,
-  fallback?: React.ComponentType
+  fallback?: React.ComponentType<any>
 ) => {
   return React.lazy(() => 
     importFunc().catch(() => {

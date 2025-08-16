@@ -127,7 +127,7 @@ export default function ContractDemo() {
       }
     } catch (error) {
       console.error('Error checking funds:', error);
-      setLastAction(`Error: ${error.message}`);
+      setLastAction(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

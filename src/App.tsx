@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import Auth from '@/components/Auth';
 import Dashboard from '@/components/Dashboard';
@@ -6,10 +6,14 @@ import DepositMoney from '@/components/DepositMoney';
 import LockFunds from '@/components/LockFunds';
 import RedeemFunds from '@/components/RedeemFunds';
 import TransactionHistory from '@/components/TransactionHistory';
+import TokenManager from '@/components/TokenManager';
 import { User } from '@/types';
 import { logout } from '@/lib/mockContract';
 
-type Screen = 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history';
+// Lazy load the heavy ContractDemo component
+const ContractDemo = lazy(() => import('@/components/ContractDemo'));
+
+type Screen = 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('auth');
@@ -40,7 +44,7 @@ function App() {
     <div className="min-h-screen">
       <AnimatePresence mode="wait">
         {currentScreen === 'auth' && (
-          <Auth key="auth" onLogin={handleLogin} />
+          <Auth key="auth" onLogin={handleLogin} onNavigate={handleNavigate} />
         )}
         {currentScreen === 'dashboard' && (
           <Dashboard 
@@ -75,6 +79,39 @@ function App() {
             user={user!} 
             onNavigate={handleNavigate} 
           />
+        )}
+        {currentScreen === 'contract-demo' && (
+          <div className="min-h-screen bg-background">
+            <div className="container mx-auto py-4">
+              <button 
+                onClick={() => setCurrentScreen('auth')}
+                className="mb-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+              >
+                ← Back to App
+              </button>
+              <Suspense fallback={
+                <div className="flex items-center justify-center min-h-[400px]">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  <span className="ml-2">Loading Web3 Demo...</span>
+                </div>
+              }>
+                <ContractDemo />
+              </Suspense>
+            </div>
+          </div>
+        )}
+        {currentScreen === 'token-manager' && (
+          <div className="min-h-screen bg-background">
+            <div className="container mx-auto py-4">
+              <button 
+                onClick={() => setCurrentScreen('auth')}
+                className="mb-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+              >
+                ← Back to App
+              </button>
+              <TokenManager />
+            </div>
+          </div>
         )}
       </AnimatePresence>
     </div>

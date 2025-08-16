@@ -12,7 +12,7 @@ export class LockPayBackend {
   }
 
   // Initialize with contract hooks
-  initialize(contracts: ReturnType<typeof useLockPayContracts>, data: ReturnType<typeof useLockPayData>) {
+  initialize(contracts: ReturnType<typeof useLockPayContracts>, _data: ReturnType<typeof useLockPayData>) {
     this.lockPayContracts = contracts;
   }
 

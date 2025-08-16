@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { TEST_TOKEN_ABI, TEST_TOKEN_SOLIDITY, DEPLOYMENT_INSTRUCTIONS } from '@/lib/testToken';
+import { TEST_TOKEN_ABI, TEST_TOKEN_SOLIDITY } from '@/lib/testToken';
 
 export default function TokenManager() {
   const [tokenAddress, setTokenAddress] = useState('');
@@ -43,7 +43,7 @@ export default function TokenManager() {
       setRecipient('');
     } catch (error) {
       console.error('Transfer error:', error);
-      setStatus(`Transfer failed: ${error.message}`);
+      setStatus(`Transfer failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -65,7 +65,7 @@ export default function TokenManager() {
       setAmount('');
     } catch (error) {
       console.error('Mint error:', error);
-      setStatus(`Mint failed: ${error.message}`);
+      setStatus(`Mint failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 

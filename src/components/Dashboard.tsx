@@ -1,14 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { User, Lock, Unlock, History, Wallet, LogOut, RefreshCw } from 'lucide-react';
 import { useLockPayBackend } from '@/lib/backend';
 
 interface DashboardProps {
   user: any;
-  onNavigate: (screen: string) => void;
+  onNavigate: (screen: 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager') => void;
   onLogout: () => void;
 }
 
@@ -17,7 +16,7 @@ export default function Dashboard({ user, onNavigate, onLogout }: DashboardProps
   const [lastUpdated, setLastUpdated] = useState(new Date());
   
   const { 
-    backend, 
+ 
     isConnected, 
     address, 
     ethBalance, 
@@ -44,18 +43,7 @@ export default function Dashboard({ user, onNavigate, onLogout }: DashboardProps
     return isNaN(num) ? '0.00' : num.toFixed(4);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return 'bg-green-100 text-green-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'failed':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+
 
   return (
     <motion.div

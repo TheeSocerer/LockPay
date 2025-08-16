@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { lazy, Suspense } from 'react';
 
@@ -25,8 +25,7 @@ export default function ContractDemo() {
     lockFunds, 
     redeemFunds, 
     getLockedFunds, 
-    getETHBalance, 
-    getLPUSDBalance,
+    
     getStableTokenAddress,
     lockLoading, 
     redeemLoading,
@@ -36,7 +35,7 @@ export default function ContractDemo() {
     address 
   } = useLockPayContracts();
 
-  const { fees, ethBalance, lpusdBalance, feesLoading, balanceLoading, lpusdBalanceLoading } = useLockPayData();
+  const { fees, ethBalance, lpusdBalance, balanceLoading, lpusdBalanceLoading } = useLockPayData();
 
   // Debug information
   console.log("Debug - Connected Address:", address);
@@ -87,7 +86,7 @@ export default function ContractDemo() {
       setPin('');
     } catch (error) {
       console.error('Error locking funds:', error);
-      setLastAction(`Error: ${error.message}`);
+      setLastAction(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -108,7 +107,7 @@ export default function ContractDemo() {
       setPin('');
     } catch (error) {
       console.error('Error redeeming funds:', error);
-      setLastAction(`Error: ${error.message}`);
+      setLastAction(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
   };
 
@@ -152,7 +151,7 @@ export default function ContractDemo() {
       }
     } catch (error) {
       console.error('Error testing contract:', error);
-      setLastAction('Error testing contract: ' + error.message);
+      setLastAction('Error testing contract: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   };
 

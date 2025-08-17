@@ -7,13 +7,14 @@ import LockFunds from '@/components/LockFunds';
 import RedeemFunds from '@/components/RedeemFunds';
 import TransactionHistory from '@/components/TransactionHistory';
 import TokenManager from '@/components/TokenManager';
+import LPUSDFaucet from '@/components/LPUSDFaucet';
 import { User } from '@/types';
 import { logout } from '@/lib/mockContract';
 
 // Lazy load the heavy ContractDemo component
 const ContractDemo = lazy(() => import('@/components/ContractDemo'));
 
-type Screen = 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager';
+type Screen = 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager' | 'faucet';
 
 function App() {
   const [currentScreen, setCurrentScreen] = useState<Screen>('auth');
@@ -110,6 +111,21 @@ function App() {
                 ← Back to App
               </button>
               <TokenManager />
+            </div>
+          </div>
+        )}
+        {currentScreen === 'faucet' && (
+          <div className="min-h-screen bg-background">
+            <div className="container mx-auto py-4">
+              <button 
+                onClick={() => setCurrentScreen('auth')}
+                className="mb-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:bg-primary/90"
+              >
+                ← Back to App
+              </button>
+              <div className="flex justify-center">
+                <LPUSDFaucet />
+              </div>
             </div>
           </div>
         )}

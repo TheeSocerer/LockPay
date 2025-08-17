@@ -10,7 +10,7 @@ import { useLockPayBackend } from '@/lib/backend';
 
 interface AuthProps {
   onLogin: (user: User) => void;
-  onNavigate?: (screen: 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager') => void;
+  onNavigate?: (screen: 'auth' | 'dashboard' | 'deposit' | 'lock' | 'redeem' | 'history' | 'contract-demo' | 'token-manager' | 'faucet') => void;
 }
 
 export default function Auth({ onLogin, onNavigate }: AuthProps) {
@@ -203,7 +203,7 @@ export default function Auth({ onLogin, onNavigate }: AuthProps) {
             Demo Mode - Use any phone number to create an account
           </p>
           
-          <div className="flex gap-2 justify-center">
+          <div className="flex gap-2 justify-center flex-wrap">
             <Button
               onClick={() => onNavigate?.('contract-demo')}
               variant="outline"
@@ -219,6 +219,14 @@ export default function Auth({ onLogin, onNavigate }: AuthProps) {
               className="text-xs"
             >
               🪙 Token Manager
+            </Button>
+            <Button
+              onClick={() => onNavigate?.('faucet')}
+              variant="outline"
+              size="sm"
+              className="text-xs"
+            >
+              🪙 LPUSD Faucet
             </Button>
           </div>
 

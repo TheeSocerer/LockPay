@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useContract, useContractWrite, useAddress } from '@thirdweb-dev/react';
+import { useContract, useContractWrite, useContractRead, useAddress } from '@thirdweb-dev/react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
@@ -7,18 +7,29 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Coins, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Faucet contract address (you'll need to deploy this and update the address)
-const FAUCET_CONTRACT_ADDRESS = "0xf7bcAace56E6169bCb10De721E168eEa9EC1cFc1"; // Leave empty until contract is deployed
+const FAUCET_CONTRACT_ADDRESS = "0xf7bcAace56E6169bCb10De721E168eEa9EC1cFc1";
 
 export default function LPUSDFaucet() {
   const address = useAddress();
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error' | 'info'>('info');
-  const [canRequest, setCanRequest] = useState(true);
-  const [timeRemaining, setTimeRemaining] = useState(0);
 
   // Contract instances
   const { contract: faucetContract } = useContract(FAUCET_CONTRACT_ADDRESS);
+
+  // Read contract data
+  const { data: faucetInfo, isLoading: infoLoading, refetch: refetchInfo } = useContractRead(
+    faucetContract,
+    "getFaucetInfo",
+    []
+  );
+
+  const { data: canRequestData, isLoading: canRequestLoading, refetch: refetchCanRequest } = useContractRead(
+    faucetContract,
+    "canRequestTokens",
+    address ? [address] : undefined
+  );
 
   // Write contract functions
   const { mutateAsync: requestTokens, isLoading: requestLoading } = useContractWrite(
@@ -28,6 +39,15 @@ export default function LPUSDFaucet() {
 
   // Check if contract is available
   const isContractAvailable = !!faucetContract && FAUCET_CONTRACT_ADDRESS;
+
+  // Parse faucet info
+  const availableTokens = faucetInfo ? Number(faucetInfo[0]) / 1e18 : 0;
+  const faucetAmount = faucetInfo ? Number(faucetInfo[1]) / 1e18 : 100;
+  const cooldownPeriod = faucetInfo ? Number(faucetInfo[2]) : 3600; // 1 hour in seconds
+
+  // Parse can request data
+  const canRequest = canRequestData ? canRequestData[0] : false;
+  const timeRemaining = canRequestData ? Number(canRequestData[1]) : 0;
 
   // Format time remaining
   const formatTimeRemaining = (seconds: number) => {
@@ -69,24 +89,14 @@ export default function LPUSDFaucet() {
 
     try {
       await requestTokens({});
-      setMessage('Successfully received 100 LPUSD tokens!');
+      setMessage(`Successfully received ${faucetAmount} LPUSD tokens!`);
       setMessageType('success');
       
-      // Set cooldown
-      setCanRequest(false);
-      setTimeRemaining(3600); // 1 hour
-      
-      // Start countdown
-      const interval = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            setCanRequest(true);
-            clearInterval(interval);
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+      // Refetch data to update the UI
+      setTimeout(() => {
+        refetchInfo();
+        refetchCanRequest();
+      }, 2000);
       
     } catch (error) {
       console.error('Error requesting tokens:', error);
@@ -148,21 +158,25 @@ export default function LPUSDFaucet() {
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Available Tokens:</span>
             <Badge variant="secondary">
-              ~100,000 LPUSD
+              {infoLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                `${availableTokens.toLocaleString()} LPUSD`
+              )}
             </Badge>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Amount per Request:</span>
             <Badge variant="outline">
-              100 LPUSD
+              {faucetAmount} LPUSD
             </Badge>
           </div>
           
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Cooldown Period:</span>
             <Badge variant="outline">
-              1 hour
+              {Math.floor(cooldownPeriod / 3600)} hour
             </Badge>
           </div>
         </div>
@@ -171,7 +185,9 @@ export default function LPUSDFaucet() {
         <div className="space-y-2">
           <div className="flex justify-between items-center">
             <span className="text-sm text-muted-foreground">Your Status:</span>
-            {canRequest ? (
+            {canRequestLoading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : canRequest ? (
               <Badge variant="success" className="bg-green-100 text-green-800">
                 <CheckCircle className="h-3 w-3 mr-1" />
                 Ready to Request
@@ -246,6 +262,15 @@ export default function LPUSDFaucet() {
               </p>
             </div>
           )}
+          
+          {/* Debug Info */}
+          <div className="mt-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <p className="text-gray-800 font-medium text-xs">Debug Info:</p>
+            <p className="text-gray-600 text-xs">Contract: {FAUCET_CONTRACT_ADDRESS}</p>
+            <p className="text-gray-600 text-xs">Address: {address || 'Not connected'}</p>
+            <p className="text-gray-600 text-xs">Can Request: {canRequest ? 'Yes' : 'No'}</p>
+            <p className="text-gray-600 text-xs">Available: {availableTokens} LPUSD</p>
+          </div>
         </div>
       </CardContent>
     </Card>

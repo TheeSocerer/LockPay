@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Coins, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Faucet contract address (you'll need to deploy this and update the address)
-const FAUCET_CONTRACT_ADDRESS = ""; // Leave empty until contract is deployed
+const FAUCET_CONTRACT_ADDRESS = "0xf7bcAace56E6169bCb10De721E168eEa9EC1cFc1"; // Leave empty until contract is deployed
 
 export default function LPUSDFaucet() {
   const address = useAddress();

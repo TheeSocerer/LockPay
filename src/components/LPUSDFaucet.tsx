@@ -59,7 +59,7 @@ export default function LPUSDFaucet() {
     setMessageType('info');
 
     try {
-      await requestTokens();
+      await requestTokens({});
       setMessage('Successfully received 100 LPUSD tokens!');
       setMessageType('success');
       

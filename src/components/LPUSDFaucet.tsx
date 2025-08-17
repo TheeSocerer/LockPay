@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Loader2, Coins, Clock, CheckCircle, AlertCircle } from 'lucide-react';
 
 // Faucet contract address (you'll need to deploy this and update the address)
-const FAUCET_CONTRACT_ADDRESS = "YOUR_FAUCET_CONTRACT_ADDRESS_HERE";
+const FAUCET_CONTRACT_ADDRESS = ""; // Leave empty until contract is deployed
 
 export default function LPUSDFaucet() {
   const address = useAddress();
@@ -25,6 +25,9 @@ export default function LPUSDFaucet() {
     faucetContract,
     "requestTokens"
   );
+
+  // Check if contract is available
+  const isContractAvailable = !!faucetContract && FAUCET_CONTRACT_ADDRESS;
 
   // Format time remaining
   const formatTimeRemaining = (seconds: number) => {
@@ -44,6 +47,12 @@ export default function LPUSDFaucet() {
   const handleRequestTokens = async () => {
     if (!address) {
       setMessage('Please connect your wallet first');
+      setMessageType('error');
+      return;
+    }
+
+    if (!isContractAvailable) {
+      setMessage('Faucet contract not deployed yet. Please check back later.');
       setMessageType('error');
       return;
     }
@@ -179,13 +188,18 @@ export default function LPUSDFaucet() {
         {/* Request Button */}
         <Button
           onClick={handleRequestTokens}
-          disabled={!canRequest || isLoading || requestLoading}
+          disabled={!canRequest || !isContractAvailable || isLoading || requestLoading}
           className="w-full"
         >
           {isLoading || requestLoading ? (
             <>
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               Requesting...
+            </>
+          ) : !isContractAvailable ? (
+            <>
+              <AlertCircle className="h-4 w-4 mr-2" />
+              Contract Not Deployed
             </>
           ) : (
             <>
@@ -223,6 +237,15 @@ export default function LPUSDFaucet() {
           <p>• Each request gives you 100 LPUSD</p>
           <p>• Use these tokens to test the LockPay application</p>
           <p>• Make sure you have enough ETH for gas fees</p>
+          {!isContractAvailable && (
+            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-yellow-800 font-medium">⚠️ Faucet Contract Not Deployed</p>
+              <p className="text-yellow-700 text-xs mt-1">
+                The LPUSD faucet contract needs to be deployed before users can request tokens. 
+                Please deploy the contract and update the address in the component.
+              </p>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

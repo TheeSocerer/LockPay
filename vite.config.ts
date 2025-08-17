@@ -33,7 +33,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom'],
           'thirdweb-vendor': ['@thirdweb-dev/react', '@thirdweb-dev/sdk', '@thirdweb-dev/chains'],
-          'ui-vendor': ['@radix-ui/react-dialog', '@radix-ui/react-button', '@radix-ui/react-card'],
+          'ui-vendor': ['@radix-ui/react-dialog'],
           'utils-vendor': ['clsx', 'tailwind-merge', 'class-variance-authority'],
           'ethers-vendor': ['ethers']
         }
